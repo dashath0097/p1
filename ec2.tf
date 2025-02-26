@@ -8,17 +8,13 @@ resource "aws_instance" "private_worker" {
     Name = "Spacelift-Worker-${count.index}"
   }
 
-user_data = templatefile("${path.module}/user_data.sh", {
-  SPACELIFT_ACCESS_KEY  = var.spacelift_access_key
-  SPACELIFT_SECRET_KEY  = var.spacelift_secret_key
-  SPACELIFT_WORKER_POOL_ID   = spacelift_worker_pool.private_workers.id
-  SPACELIFT_WORKER_POOL_CERT = "${path.module}/worker.crt"
-  SPACELIFT_WORKER_POOL_KEY  = tls_private_key.worker_key.private_key_pem
-})
+  user_data = templatefile("${path.module}/user_data.sh", {
+    SPACELIFT_ACCESS_KEY        = var.spacelift_access_key
+    SPACELIFT_SECRET_KEY        = var.spacelift_secret_key
+    SPACELIFT_WORKER_POOL_ID    = spacelift_worker_pool.private_workers.id
+    SPACELIFT_WORKER_POOL_CERT  = "${path.module}/worker.crt"
+    SPACELIFT_WORKER_POOL_KEY   = tls_private_key.worker_key.private_key_pem
+  })
 
-  depends_on = [
-    local_file.worker_crt_file, 
-    null_resource.upload_csr, 
-    null_resource.fetch_worker_cert
-  ] # Ensures dependencies are created before using them
+  depends_on = [local_file.worker_crt_file] # Ensures worker.crt is created before using it
 }
