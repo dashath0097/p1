@@ -1,23 +1,25 @@
-
-
-# Fetch the worker certificate from Spacelift API
 resource "null_resource" "fetch_worker_cert" {
   provisioner "local-exec" {
     command = <<EOT
-      INSTALL_DIR="$HOME/.local/bin"
+      # Determine Spacelift CLI install location
+      INSTALL_DIR="/usr/local/bin"
+      if [ ! -f "$INSTALL_DIR/spacelift-launcher" ]; then
+        INSTALL_DIR="$HOME/.local/bin"
+      fi
+
       SPACELIFT_CLI="$INSTALL_DIR/spacelift-launcher"
 
-      # Ensure Spacelift CLI is installed before running
+      # Verify Spacelift CLI exists
       if [ ! -f "$SPACELIFT_CLI" ]; then
-        echo "Error: Spacelift CLI not found at $SPACELIFT_CLI"
+        echo "❌ Error: Spacelift CLI not found in expected locations."
         exit 1
       fi
 
-      # Ensure Spacelift CLI is in PATH
+      # Ensure CLI is in PATH
       export PATH="$INSTALL_DIR:$PATH"
 
       # Debugging - Print CLI version
-      "$SPACELIFT_CLI" version || { echo "Error: Spacelift CLI is not executable"; exit 1; }
+      "$SPACELIFT_CLI" version || { echo "❌ Error: Spacelift CLI is not executable"; exit 1; }
 
       # Fetch worker certificate
       SPACELIFT_ACCESS_KEY=${var.spacelift_access_key} \
@@ -30,18 +32,16 @@ resource "null_resource" "fetch_worker_cert" {
     EOT
   }
 
-  depends_on = [null_resource.install_spacelift_cli] # Ensure CLI is installed first
+  depends_on = [null_resource.install_spacelift_cli]
 }
 
-# Ensure the worker certificate is saved correctly
 resource "local_file" "worker_crt_file" {
-  content  = fileexists("${path.module}/worker.crt") ? file("${path.module}/worker.crt") : "Certificate not found"
+  content  = fileexists("${path.module}/worker.crt") ? file("${path.module}/worker.crt") : "No certificate found"
   filename = "${path.module}/worker.crt"
 
   depends_on = [null_resource.fetch_worker_cert]
 }
 
-# Output the certificate content securely
 output "worker_cert" {
   value     = fileexists("${path.module}/worker.crt") ? file("${path.module}/worker.crt") : "No certificate found"
   sensitive = true
