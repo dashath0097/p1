@@ -2,32 +2,22 @@ resource "null_resource" "fetch_worker_cert" {
   provisioner "local-exec" {
     command = <<EOT
       # Define install directory
-      INSTALL_DIR="/usr/local/bin"
-      if [ ! -w "$INSTALL_DIR" ]; then
-        INSTALL_DIR="$HOME/.local/bin"
-        mkdir -p "$INSTALL_DIR"
-        export PATH="$INSTALL_DIR:$PATH"
-      fi
+      INSTALL_DIR="$HOME/.local/bin"
+      mkdir -p "$INSTALL_DIR"
 
+      # Ensure Spacelift CLI is installed and executable
       SPACELIFT_CLI="$INSTALL_DIR/spacelift-launcher"
-
-      # Install Spacelift CLI if not found
+      
       if [ ! -f "$SPACELIFT_CLI" ]; then
         echo "⚠️ Spacelift CLI not found. Installing..."
         wget -O "$SPACELIFT_CLI" https://downloads.spacelift.io/spacelift-launcher-x86_64
         chmod +x "$SPACELIFT_CLI"
       fi
 
-      # Ensure CLI is executable
-      chmod +x "$SPACELIFT_CLI"
+      # Ensure CLI is in PATH
+      export PATH="$INSTALL_DIR:$PATH"
 
-      # Verify Spacelift CLI exists
-      if [ ! -f "$SPACELIFT_CLI" ]; then
-        echo "❌ Error: Spacelift CLI installation failed."
-        exit 1
-      fi
-
-      # Debugging - Print CLI version
+      # Verify Spacelift CLI is working
       "$SPACELIFT_CLI" version || { echo "❌ Error: Spacelift CLI is not executable"; exit 1; }
 
       # Fetch worker certificate
