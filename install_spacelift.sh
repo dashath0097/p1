@@ -6,8 +6,8 @@ if ! command -v spacelift &>/dev/null; then
   echo "Spacelift CLI not found, installing..."
   
   # Download and install Spacelift CLI
-  curl -Lo /usr/local/bin/spacelift https://downloads.spacelift.io/spacelift-cli/latest/linux-amd64
-  chmod +x /usr/local/bin/spacelift
+  curl -Lo /usr/local/bin/spacelift-launcher https://downloads.spacelift.io/spacelift-launcher-x86_64
+  chmod +x /usr/local/bin/spacelift-launcher
   
   echo "Spacelift CLI installed successfully!"
 else
