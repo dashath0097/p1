@@ -1,7 +1,12 @@
+resource "null_resource" "install_spacelift_cli" {
+  provisioner "local-exec" {
+    command = "wget -O /usr/local/bin/spacelift-launcher https://downloads.spacelift.io/spacelift-launcher-x86_64 && chmod +x /usr/local/bin/spacelift-launcher"
+  }
+}
+
 resource "null_resource" "upload_csr" {
   provisioner "local-exec" {
     command = <<EOT
-      # Ensure Spacelift CLI is in the path
       export PATH="/usr/local/bin:$PATH"
 
       # Upload CSR
