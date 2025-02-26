@@ -9,3 +9,7 @@ variable "spacelift_secret_key" {
   type        = string
   sensitive   = true
 }
+variable "spacelift_token" {
+  type      = string
+  sensitive = true
+}
