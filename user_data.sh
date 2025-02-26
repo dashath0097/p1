@@ -1,34 +1,28 @@
 #!/bin/bash
 set -eux  # Enable debugging mode
 
-echo "Starting Spacelift Worker setup..."
-
 # Install dependencies
 sudo apt update && sudo apt install -y curl wget
 
 # Download the Spacelift Launcher
-echo "Downloading Spacelift Launcher..."
 sudo wget -O /usr/local/bin/spacelift-launcher https://downloads.spacelift.io/spacelift-launcher-x86_64
 sudo chmod +x /usr/local/bin/spacelift-launcher
 
 # Export Spacelift credentials
 export SPACELIFT_ACCESS_KEY="${SPACELIFT_ACCESS_KEY}"
 export SPACELIFT_SECRET_KEY="${SPACELIFT_SECRET_KEY}"
+export WORKER_POOL_ID="${SPACELIFT_WORKER_POOL_ID}"
 
-# Persist the credentials
+# Persist credentials
 echo "export SPACELIFT_ACCESS_KEY=${SPACELIFT_ACCESS_KEY}" | sudo tee -a /etc/environment
 echo "export SPACELIFT_SECRET_KEY=${SPACELIFT_SECRET_KEY}" | sudo tee -a /etc/environment
+echo "export WORKER_POOL_ID=${WORKER_POOL_ID}" | sudo tee -a /etc/environment
 
 # Verify credentials
-if [[ -z "$SPACELIFT_ACCESS_KEY" || -z "$SPACELIFT_SECRET_KEY" ]]; then
-    echo "Error: Spacelift Access Key or Secret Key is empty! Exiting..."
+if [[ -z "$SPACELIFT_ACCESS_KEY" || -z "$SPACELIFT_SECRET_KEY" || -z "$WORKER_POOL_ID" ]]; then
+    echo "Error: Missing Spacelift credentials or Worker Pool ID!"
     exit 1
 fi
 
-echo "Spacelift credentials successfully set."
-
-# Register the Spacelift Worker using Access Key and Secret
-echo "Registering worker to Spacelift Worker Pool: ${WORKER_POOL_ID}"
+# Register worker to Spacelift
 sudo -E /usr/local/bin/spacelift-launcher register --worker-pool "${WORKER_POOL_ID}"
-
-echo "Worker registration complete!"
