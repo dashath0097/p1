@@ -9,6 +9,4 @@ resource "null_resource" "upload_csr" {
       --csr-file worker.csr
     EOT
   }
-
-  depends_on = [null_resource.install_spacelift_cli]
 }
