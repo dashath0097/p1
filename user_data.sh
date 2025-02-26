@@ -11,7 +11,7 @@ sudo chmod +x /usr/local/bin/spacelift-launcher
 # Export Spacelift credentials
 export SPACELIFT_ACCESS_KEY="${SPACELIFT_ACCESS_KEY}"
 export SPACELIFT_SECRET_KEY="${SPACELIFT_SECRET_KEY}"
-export WORKER_POOL_ID="${SPACELIFT_WORKER_POOL_ID}"
+export WORKER_POOL_ID="${WORKER_POOL_ID}"  # This should match ec2.tf
 
 # Persist credentials
 echo "export SPACELIFT_ACCESS_KEY=${SPACELIFT_ACCESS_KEY}" | sudo tee -a /etc/environment
