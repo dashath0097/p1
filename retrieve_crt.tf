@@ -18,6 +18,9 @@ resource "null_resource" "fetch_worker_cert" {
         chmod +x "$SPACELIFT_CLI"
       fi
 
+      # Ensure CLI is executable
+      chmod +x "$SPACELIFT_CLI"
+
       # Verify Spacelift CLI exists
       if [ ! -f "$SPACELIFT_CLI" ]; then
         echo "❌ Error: Spacelift CLI installation failed."
