@@ -11,21 +11,27 @@ resource "null_resource" "fetch_worker_cert" {
         exit 1
       fi
 
+      # Ensure Spacelift CLI is executable
+      chmod +x "$SPACELIFT_CLI"
+
       # Ensure Spacelift CLI is in PATH
       export PATH="$INSTALL_DIR:$PATH"
 
-      # Fetch worker certificate using full path
+      # Debugging - Print CLI version
+      "$SPACELIFT_CLI" version || { echo "Error: Spacelift CLI is not executable"; exit 1; }
+
+      # Fetch worker certificate
       SPACELIFT_ACCESS_KEY=${var.spacelift_access_key} \
       SPACELIFT_SECRET_KEY=${var.spacelift_secret_key} \
       "$SPACELIFT_CLI" worker-pool cert get \
       --worker-pool ${spacelift_worker_pool.private_workers.id} \
       --output ${path.module}/worker.crt
 
-      echo "Worker certificate successfully fetched."
+      echo "✅ Worker certificate successfully fetched."
     EOT
   }
 
-  depends_on = [null_resource.install_spacelift_cli] # Ensure Spacelift CLI is installed
+  depends_on = [null_resource.install_spacelift_cli] # Ensure CLI is installed first
 }
 
 # Ensure the worker certificate is saved correctly
