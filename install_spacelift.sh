@@ -8,9 +8,9 @@ if ! command -v spacelift &>/dev/null; then
   # Download Spacelift CLI
   curl -Lo spacelift https://downloads.spacelift.io/spacelift-cli/latest/linux-amd64
   
-  # Move to /usr/local/bin with sudo
-  sudo mv spacelift /usr/local/bin/spacelift
-  sudo chmod +x /usr/local/bin/spacelift
+  # Move it to /usr/local/bin (Assumes script runs as a user with write permissions)
+  mv spacelift /usr/local/bin/spacelift
+  chmod +x /usr/local/bin/spacelift
   
   echo "Spacelift CLI installed successfully!"
 else
