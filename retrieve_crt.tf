@@ -13,16 +13,18 @@ resource "null_resource" "fetch_worker_cert" {
   depends_on = [null_resource.upload_csr]
 }
 
-# Save the fetched certificate locally
+# Save the fetched certificate dynamically
 resource "local_file" "worker_crt_file" {
-  content  = file("${path.module}/worker.crt")  # Store actual certificate
+  content  = <<EOT
+  ${fileexists("${path.module}/worker.crt") ? file("${path.module}/worker.crt") : "Certificate not generated yet"}
+  EOT
   filename = "${path.module}/worker.crt"
 
   depends_on = [null_resource.fetch_worker_cert]
 }
 
-# Output certificate content for debugging (Sensitive)
+# Output certificate content correctly
 output "worker_cert" {
-  value     = file("${path.module}/worker.crt")
+  value     = local_file.worker_crt_file.content
   sensitive = true
 }
