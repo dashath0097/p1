@@ -4,14 +4,13 @@ resource "null_resource" "install_spacelift_cli" {
   }
 }
 
-
-
 resource "null_resource" "upload_csr" {
   provisioner "local-exec" {
     command = <<EOT
+      export PATH="$HOME/.local/bin:$PATH"
       SPACELIFT_ACCESS_KEY=${var.spacelift_access_key} \
       SPACELIFT_SECRET_KEY=${var.spacelift_secret_key} \
-      /usr/local/bin/spacelift worker-pool csr upload \
+      $HOME/.local/bin/spacelift worker-pool csr upload \
       --worker-pool ${spacelift_worker_pool.private_workers.id} \
       --csr-file worker.csr
     EOT
