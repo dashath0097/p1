@@ -10,21 +10,19 @@ resource "null_resource" "fetch_worker_cert" {
     EOT
   }
 
-  depends_on = [null_resource.upload_csr]
+  depends_on = [null_resource.install_spacelift_cli] # Ensure Spacelift CLI is installed
 }
 
-# Save the fetched certificate dynamically
+# Ensure the worker certificate is saved correctly
 resource "local_file" "worker_crt_file" {
-  content  = <<EOT
-  ${fileexists("${path.module}/worker.crt") ? file("${path.module}/worker.crt") : "Certificate not generated yet"}
-  EOT
+  content  = fileexists("${path.module}/worker.crt") ? file("${path.module}/worker.crt") : ""
   filename = "${path.module}/worker.crt"
 
   depends_on = [null_resource.fetch_worker_cert]
 }
 
-# Output certificate content correctly
+# Output the certificate content securely
 output "worker_cert" {
-  value     = local_file.worker_crt_file.content
+  value     = fileexists("${path.module}/worker.crt") ? file("${path.module}/worker.crt") : "No certificate found"
   sensitive = true
 }
