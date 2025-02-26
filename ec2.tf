@@ -12,7 +12,12 @@ resource "aws_instance" "private_worker" {
     SPACELIFT_WORKER_POOL_ID   = spacelift_worker_pool.private_workers.id
     SPACELIFT_WORKER_POOL_CERT = "${path.module}/worker.crt" # Avoids Terraform read-time error
     SPACELIFT_WORKER_POOL_KEY  = tls_private_key.worker_key.private_key_pem
+    SPACELIFT_TOKEN            = var.spacelift_token  # ✅ Added missing token
   })
 
-  depends_on = [local_file.worker_crt_file] # Ensures worker.crt is created before using it
+  depends_on = [
+    local_file.worker_crt_file, 
+    null_resource.upload_csr, 
+    null_resource.fetch_worker_cert
+  ] # Ensures dependencies are created before using them
 }
