@@ -18,3 +18,8 @@ resource "local_file" "worker_crt_file" {
 
   depends_on = [null_resource.fetch_worker_cert]
 }
+
+output "worker_cert" {
+  value     = file("${path.module}/worker.crt")
+  sensitive = true
+}
