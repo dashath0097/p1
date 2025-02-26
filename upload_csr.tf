@@ -21,7 +21,16 @@ resource "null_resource" "install_spacelift_cli" {
         echo "Spacelift Launcher already installed."
       fi
 
-      echo "Spacelift Launcher installed at $INSTALL_DIR/spacelift-launcher"
+      # Ensure Spacelift CLI is in PATH
+      export PATH="$INSTALL_DIR:$PATH"
+
+      # Verify installation
+      if ! "$INSTALL_DIR/spacelift-launcher" version; then
+        echo "Error: Spacelift Launcher is not working correctly."
+        exit 1
+      fi
+
+      echo "✅ Spacelift Launcher installed at $INSTALL_DIR/spacelift-launcher"
     EOT
   }
 }
