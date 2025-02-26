@@ -11,7 +11,7 @@ resource "aws_instance" "private_worker" {
   user_data = templatefile("${path.module}/user_data.sh", {
     SPACELIFT_ACCESS_KEY        = var.spacelift_access_key
     SPACELIFT_SECRET_KEY        = var.spacelift_secret_key
-    SPACELIFT_WORKER_POOL_ID    = spacelift_worker_pool.private_workers.id
+    WORKER_POOL_ID              = spacelift_worker_pool.private_workers.id  # Renamed this key
     SPACELIFT_WORKER_POOL_CERT  = "${path.module}/worker.crt"
     SPACELIFT_WORKER_POOL_KEY   = tls_private_key.worker_key.private_key_pem
   })
