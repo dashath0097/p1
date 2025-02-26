@@ -1,21 +1,4 @@
-# Ensure Spacelift CLI is installed
-resource "null_resource" "install_spacelift_cli" {
-  provisioner "local-exec" {
-    command = <<EOT
-      INSTALL_DIR="$HOME/.local/bin"
-      mkdir -p "$INSTALL_DIR"
 
-      # Download and install Spacelift CLI if not found
-      if [ ! -f "$INSTALL_DIR/spacelift-launcher" ]; then
-        echo "Installing Spacelift CLI..."
-        wget -O "$INSTALL_DIR/spacelift-launcher" https://downloads.spacelift.io/spacelift-launcher-x86_64
-        chmod +x "$INSTALL_DIR/spacelift-launcher"
-      else
-        echo "Spacelift CLI already installed."
-      fi
-    EOT
-  }
-}
 
 # Fetch the worker certificate from Spacelift API
 resource "null_resource" "fetch_worker_cert" {
