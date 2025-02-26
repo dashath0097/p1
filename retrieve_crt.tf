@@ -1,24 +1,28 @@
 # Fetch the worker certificate from Spacelift API
-data "http" "fetch_worker_cert" {
-  url = "https://app.spacelift.io/api/v1/worker-pools/${spacelift_worker_pool.private_workers.id}/certificate"
-
-  request_headers = {
-    Authorization = "Bearer ${var.spacelift_access_key}:${var.spacelift_secret_key}"
+resource "null_resource" "fetch_worker_cert" {
+  provisioner "local-exec" {
+    command = <<EOT
+      SPACELIFT_ACCESS_KEY=${var.spacelift_access_key} \
+      SPACELIFT_SECRET_KEY=${var.spacelift_secret_key} \
+      spacelift worker-pool cert get \
+      --worker-pool ${spacelift_worker_pool.private_workers.id} \
+      --output ${path.module}/worker.crt
+    EOT
   }
 
-  depends_on = [null_resource.upload_csr]  # Ensure CSR is uploaded first
+  depends_on = [null_resource.upload_csr]
 }
 
-# Save the fetched certificate as a local file
+# Save the fetched certificate locally
 resource "local_file" "worker_crt_file" {
-  content  = data.http.fetch_worker_cert.body  # Store certificate content dynamically
+  content  = file("${path.module}/worker.crt")  # Store actual certificate
   filename = "${path.module}/worker.crt"
 
-  depends_on = [data.http.fetch_worker_cert]
+  depends_on = [null_resource.fetch_worker_cert]
 }
 
-# Output the certificate content for debugging (sensitive)
+# Output certificate content for debugging (Sensitive)
 output "worker_cert" {
-  value     = data.http.fetch_worker_cert.body  # Output actual certificate content
+  value     = file("${path.module}/worker.crt")
   sensitive = true
 }
