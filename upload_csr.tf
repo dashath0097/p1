@@ -15,9 +15,15 @@ resource "null_resource" "upload_csr" {
         chmod +x "$INSTALL_DIR/spacelift-launcher"
       fi
 
-      # Set Spacelift authentication
-      export SPACELIFT_ACCESS_KEY=${var.spacelift_access_key}
-      export SPACELIFT_SECRET_KEY=${var.spacelift_secret_key}
+      # Create Spacelift API credentials JSON file
+      CREDENTIALS_FILE="$HOME/.spacelift-api-credentials.json"
+      echo '{
+        "access_key": "${var.spacelift_access_key}",
+        "secret_key": "${var.spacelift_secret_key}"
+      }' > "$CREDENTIALS_FILE"
+
+      # Set API credentials environment variable
+      export SPACELIFT_API_CREDENTIALS="$CREDENTIALS_FILE"
 
       # Run the CSR upload command
       "$INSTALL_DIR/spacelift-launcher" worker-pool csr upload \
