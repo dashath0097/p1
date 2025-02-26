@@ -2,9 +2,15 @@
 resource "null_resource" "fetch_worker_cert" {
   provisioner "local-exec" {
     command = <<EOT
+      export INSTALL_DIR="$HOME/.local/bin"
+
+      # Ensure Spacelift CLI is in PATH
+      export PATH="$INSTALL_DIR:$PATH"
+
+      # Fetch worker certificate using full path to Spacelift CLI
       SPACELIFT_ACCESS_KEY=${var.spacelift_access_key} \
       SPACELIFT_SECRET_KEY=${var.spacelift_secret_key} \
-      spacelift worker-pool cert get \
+      "$INSTALL_DIR/spacelift-launcher" worker-pool cert get \
       --worker-pool ${spacelift_worker_pool.private_workers.id} \
       --output ${path.module}/worker.crt
     EOT
@@ -15,7 +21,7 @@ resource "null_resource" "fetch_worker_cert" {
 
 # Ensure the worker certificate is saved correctly
 resource "local_file" "worker_crt_file" {
-  content  = fileexists("${path.module}/worker.crt") ? file("${path.module}/worker.crt") : ""
+  content  = fileexists("${path.module}/worker.crt") ? file("${path.module}/worker.crt") : "Certificate not found"
   filename = "${path.module}/worker.crt"
 
   depends_on = [null_resource.fetch_worker_cert]
