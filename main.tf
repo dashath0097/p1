@@ -20,6 +20,5 @@ provider "aws" {
 }
 
 provider "spacelift" {
-  access_key = var.spacelift_access_key
-  secret_key = var.spacelift_secret_key
+ 
 }
