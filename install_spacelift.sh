@@ -5,9 +5,12 @@ set -eux
 if ! command -v spacelift &>/dev/null; then
   echo "Spacelift CLI not found, installing..."
   
-  # Download and install Spacelift CLI
-  curl -Lo /usr/local/bin/spacelift-launcher https://downloads.spacelift.io/spacelift-launcher-x86_64
-  chmod +x /usr/local/bin/spacelift-launcher
+  # Download Spacelift CLI
+  curl -Lo spacelift https://downloads.spacelift.io/spacelift-cli/latest/linux-amd64
+  
+  # Move to /usr/local/bin with sudo
+  sudo mv spacelift /usr/local/bin/spacelift
+  sudo chmod +x /usr/local/bin/spacelift
   
   echo "Spacelift CLI installed successfully!"
 else
