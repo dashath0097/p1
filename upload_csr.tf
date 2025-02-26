@@ -1,8 +1,9 @@
 resource "null_resource" "install_spacelift_cli" {
   provisioner "local-exec" {
-    command = "bash ${path.module}/install_spacelift.sh"
+    command = "sudo bash ${path.module}/install_spacelift.sh"
   }
 }
+
 
 resource "null_resource" "upload_csr" {
   provisioner "local-exec" {
