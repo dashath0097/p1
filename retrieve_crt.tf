@@ -34,10 +34,10 @@ resource "null_resource" "fetch_worker_cert" {
 
       # Fetch worker certificate
       "$SPACELIFT_CLI" worker-pool cert get \
-      --worker-pool "${spacelift_worker_pool.private_workers.id}" \
-      --output "${path.module}/worker.crt"
+        --worker-pool "${var.worker_pool_id}" \
+        --output "worker.crt"
 
-      if [ ! -f "${path.module}/worker.crt" ]; then
+      if [ ! -f "worker.crt" ]; then
         echo "❌ Error: Worker certificate not fetched"
         exit 1
       fi
@@ -45,18 +45,4 @@ resource "null_resource" "fetch_worker_cert" {
       echo "✅ Worker certificate successfully fetched."
     EOT
   }
-
-  depends_on = [null_resource.install_spacelift_cli]
-}
-
-resource "local_file" "worker_crt_file" {
-  content  = fileexists("${path.module}/worker.crt") ? file("${path.module}/worker.crt") : ""
-  filename = "${path.module}/worker.crt"
-
-  depends_on = [null_resource.fetch_worker_cert]
-}
-
-output "worker_cert" {
-  value     = fileexists("${path.module}/worker.crt") ? file("${path.module}/worker.crt") : "No certificate found"
-  sensitive = true
 }
